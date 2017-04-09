@@ -1,0 +1,30 @@
+{
+    "name": "lamsa/api-core",
+    "description": "Api Core Component for Php Symfony projects",
+    "authors": [
+        {
+            "name": "Zaid Sasa",
+            "email": "zaidsa3sa3@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.1",
+        "symfony/symfony": "3.2.*",
+        "symfony/event-dispatcher": "^3.0",
+        "friendsofsymfony/rest-bundle": "^2.1",
+        "psr/log": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.4.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lamsa\\ApiCore\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lamsa\\ApiCoreTest\\": "tests/"
+        }
+    }
+}

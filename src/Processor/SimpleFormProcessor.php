@@ -21,6 +21,9 @@ use Symfony\Component\Form\FormInterface;
  */
 class SimpleFormProcessor
 {
+    /**
+     * @var string
+     */
     const MSG_INVALID_SUBMITTED_DATA = 'Invalid submitted data';
 
     /**
@@ -29,20 +32,13 @@ class SimpleFormProcessor
     private $formFactory;
 
     /**
-     * @var FormErrorConverter
-     */
-    private $formErrorConverter;
-
-    /**
      * SimpleFormProcessor constructor.
      *
-     * @param FormFactoryInterface        $formFactory
-     * @param FormErrorConverterInterface $formErrorConverter
+     * @param FormFactoryInterface $formFactory
      */
-    public function __construct(FormFactoryInterface $formFactory, FormErrorConverterInterface $formErrorConverter)
+    public function __construct(FormFactoryInterface $formFactory)
     {
-        $this->formFactory        = $formFactory;
-        $this->formErrorConverter = $formErrorConverter;
+        $this->formFactory = $formFactory;
     }
 
     /**
@@ -62,7 +58,7 @@ class SimpleFormProcessor
             return $entity;
         }
 
-        throw new InvalidFormException(static::MSG_INVALID_SUBMITTED_DATA, $this->formErrorConverter->toArray($form));
+        throw new InvalidFormException(static::MSG_INVALID_SUBMITTED_DATA, $form);
     }
 
 }

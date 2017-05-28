@@ -2,8 +2,8 @@
 /**
  * api-core
  *
- *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
 namespace Lamsa\ApiCore\Response;
@@ -31,7 +31,7 @@ class ExceptionResponseEntity
      * @param string     $message
      * @param array|null $data
      */
-    public function __construct($message, array $data = null)
+    public function __construct(string $message, array $data = null)
     {
         $this->message = $message;
         $this->data    = $data;
@@ -40,7 +40,7 @@ class ExceptionResponseEntity
     /**
      * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
@@ -50,7 +50,7 @@ class ExceptionResponseEntity
      *
      * @return $this
      */
-    public function setMessage($message)
+    public function setMessage(string $message)
     {
         $this->message = $message;
 
@@ -60,7 +60,7 @@ class ExceptionResponseEntity
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
@@ -70,7 +70,7 @@ class ExceptionResponseEntity
      *
      * @return $this
      */
-    public function setData($data)
+    public function setData(array $data)
     {
         $this->data = $data;
 

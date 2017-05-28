@@ -9,9 +9,13 @@
 namespace Lamsa\ApiCoreTest\Subscriber;
 
 use FOS\RestBundle\View\ViewHandlerInterface;
+use Lamsa\ApiCore\Converter\FormErrorConverter;
+use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Subscriber\ApiExceptionSubscriber;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormConfigInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -40,6 +44,16 @@ class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
     private $httpKernelMock;
 
     /**
+     * @var FormErrorConverterInterface
+     */
+    private $formErrorConverter;
+
+    /**
+     * @var FormConfigInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $formConfigMock;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -50,6 +64,11 @@ class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
         $this->loggerMock     = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
         $this->httpKernelMock = $this->getMockBuilder(HttpKernelInterface::class)
+            ->getMock();
+
+        $this->formErrorConverter = new FormErrorConverter();
+
+        $this->formConfigMock = $this->getMockBuilder(FormConfigInterface::class)
             ->getMock();
     }
 
@@ -65,8 +84,8 @@ class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
             ->method('handle')
             ->willReturn($response);
 
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock);
-        $exception              = new  InvalidFormException('koko', []);
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter);
+        $exception              = new  InvalidFormException('koko', new Form($this->formConfigMock));
 
         $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
         $ApiExceptionSubscriber->onApiException($event);
@@ -80,7 +99,7 @@ class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnApiExceptionWithoutHttpException()
     {
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock);
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter);
         $exception              = new  \Exception('koko');
 
         $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);

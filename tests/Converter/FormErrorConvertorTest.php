@@ -9,8 +9,9 @@
 namespace Lamsa\ApiCoreTest\Converter;
 
 use Lamsa\ApiCore\Converter\FormErrorConverter;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormConfigInterface;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\FormInterface;
 
 /**
  * Class FormErrorConverterTest
@@ -19,60 +20,48 @@ use Symfony\Component\Form\FormInterface;
  */
 class FormErrorConverterTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var FormConfigInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $formConfigMock;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        $this->formConfigMock = $this->getMockBuilder(FormConfigInterface::class)
+            ->getMock();
+    }
+
 
     /**
      * @covers FormErrorConverter::toArray()
      */
     public function testToArray()
     {
-        $expectedErrorArray = [
-            'level1' => [
-                'message'  => 'missing test',
-                'children' => [
-                    'level2' => [
-                        'message' => 'missing test level 2',
-                    ],
-                ],
-            ],
-        ];
-
+        $form = new Form($this->formConfigMock);
 
         $formErrorConverter = new FormErrorConverter();
+        $this->assertEmpty($formErrorConverter->toArray($form));
+        $this->assertCount(0, $formErrorConverter->toArray($form));
+    }
 
-        $formChildLevel2Mock = $this->getMockBuilder(FormInterface::class)
-            ->getMock();
-        $formChildLevel2Mock
-            ->expects($this->once())
-            ->method('getErrors')
-            ->willReturn([
-                'anything' => new FormError('missing test level 2'),
-            ]);
+    /**
+     * @covers FormErrorConverter::toArray()
+     */
+    public function testToArrayWithErrors()
+    {
+        $expectedArray = [
+            'this an error',
+        ];
 
-        $formChildMock = $this->getMockBuilder(FormInterface::class)
-            ->getMock();
-        $formChildMock
-            ->expects($this->once())
-            ->method('getErrors')
-            ->willReturn([
-                'x' => new FormError('missing test'),
-            ]);
+        $form = new Form($this->formConfigMock);
 
-        $formChildMock
-            ->expects($this->exactly(2))
-            ->method('all')
-            ->willReturn([
-                'level2' => $formChildLevel2Mock,
-            ]);
-
-        $form = $this->getMockBuilder(FormInterface::class)
-            ->getMock();
-        $form
-            ->expects($this->once())
-            ->method('all')
-            ->willReturn([
-                'level1' => $formChildMock,
-            ]);
-        $this->assertEquals($expectedErrorArray, $formErrorConverter->toArray($form));
+        $form->addError(new FormError('this an error'));
+        $formErrorConverter = new FormErrorConverter();
+        $this->assertEquals($expectedArray, $formErrorConverter->toArray($form));
+        $this->assertCount(1, $formErrorConverter->toArray($form));
     }
 
 }

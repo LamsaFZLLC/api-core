@@ -20,16 +20,16 @@ abstract class AbstractResponse
     /**
      * @var int
      */
-    protected $statusCode;
+    protected $code;
 
     /**
      * AbstractResponse constructor.
      *
-     * @param int $statusCode
+     * @param int $code
      */
-    public function __construct($statusCode)
+    public function __construct($code)
     {
-        $this->statusCode = $statusCode;
+        $this->code = $code;
     }
 
     /**
@@ -37,17 +37,17 @@ abstract class AbstractResponse
      */
     public function getView()
     {
-        return new View($this, $this->statusCode);
+        return new View($this, $this->code);
     }
 
     /**
-     * @param string $statusCode
+     * @param string $code
      *
      * @return $this
      */
-    public function setStatusCode($statusCode)
+    public function setCode($code)
     {
-        $this->statusCode = $statusCode;
+        $this->code = $code;
 
         return $this;
     }

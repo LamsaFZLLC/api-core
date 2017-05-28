@@ -9,6 +9,7 @@
 namespace Lamsa\ApiCore\Processor;
 
 use Lamsa\ApiCore\Converter\FormErrorConverter;
+use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -35,10 +36,10 @@ class SimpleFormProcessor
     /**
      * SimpleFormProcessor constructor.
      *
-     * @param FormFactoryInterface $formFactory
-     * @param FormErrorConverter   $formErrorConverter
+     * @param FormFactoryInterface        $formFactory
+     * @param FormErrorConverterInterface $formErrorConverter
      */
-    public function __construct(FormFactoryInterface $formFactory, FormErrorConverter $formErrorConverter)
+    public function __construct(FormFactoryInterface $formFactory, FormErrorConverterInterface $formErrorConverter)
     {
         $this->formFactory        = $formFactory;
         $this->formErrorConverter = $formErrorConverter;

@@ -2,8 +2,8 @@
 /**
  * api-core
  *
- *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
 namespace Lamsa\ApiCore\Response;
@@ -33,7 +33,7 @@ class SuccessResponse extends AbstractResponse
      * @param object $data
      * @param int    $statusCode
      */
-    public function __construct($data, $statusCode)
+    public function __construct($data, int $statusCode)
     {
         $this->links = [];
         $this->data  = $data;
@@ -43,7 +43,7 @@ class SuccessResponse extends AbstractResponse
     /**
      * @return View
      */
-    public function getView()
+    public function getView(): View
     {
         return new View($this, $this->code);
     }
@@ -52,9 +52,9 @@ class SuccessResponse extends AbstractResponse
      * @param string $name
      * @param string $link
      *
-     * @return $this
+     * @return SuccessResponse
      */
-    public function addLink($name, $link)
+    public function addLink(string $name, string $link): SuccessResponse
     {
         $this->links[$name] = $link;
 

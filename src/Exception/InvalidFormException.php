@@ -2,12 +2,13 @@
 /**
  * api-core
  *
- *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
 namespace Lamsa\ApiCore\Exception;
 
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
@@ -18,22 +19,22 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 class InvalidFormException extends \Exception implements HttpExceptionInterface
 {
     /**
-     * @var array
+     * @var FormInterface
      */
-    private $errors;
+    private $form;
 
-    public function __construct($message, array $errors, $code = 422, \Exception $previous = null)
+    public function __construct(string $message, FormInterface $form, int $code = 422, \Exception $previous = null)
     {
-        $this->errors = $errors;
+        $this->form = $form;
         parent::__construct($message, $code, $previous);
     }
 
     /**
-     * @return array
+     * @return FormInterface
      */
-    public function getErrors()
+    public function getForm(): FormInterface
     {
-        return $this->errors;
+        return $this->form;
     }
 
     /**
@@ -41,9 +42,9 @@ class InvalidFormException extends \Exception implements HttpExceptionInterface
      *
      * @return int An HTTP response status code
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
-        $this->getCode();
+        return $this->getCode();
     }
 
     /**
@@ -51,7 +52,7 @@ class InvalidFormException extends \Exception implements HttpExceptionInterface
      *
      * @return array Response headers
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return [];
     }

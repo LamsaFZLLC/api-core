@@ -2,8 +2,8 @@
 /**
  * api-core
  *
- *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
 namespace Lamsa\ApiCore\Response;
@@ -27,7 +27,7 @@ abstract class AbstractResponse
      *
      * @param int $code
      */
-    public function __construct($code)
+    public function __construct(int $code)
     {
         $this->code = $code;
     }
@@ -35,17 +35,17 @@ abstract class AbstractResponse
     /**
      * @return View
      */
-    public function getView()
+    public function getView(): View
     {
         return new View($this, $this->code);
     }
 
     /**
-     * @param string $code
+     * @param int $code
      *
-     * @return $this
+     * @return AbstractResponse
      */
-    public function setCode($code)
+    public function setCode(int $code): AbstractResponse
     {
         $this->code = $code;
 

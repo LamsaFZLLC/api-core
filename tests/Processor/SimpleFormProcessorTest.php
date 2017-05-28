@@ -8,7 +8,6 @@
 
 namespace Lamsa\ApiCoreTest\Processor;
 
-use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Processor\SimpleFormProcessor;
 use Lamsa\ApiCoreTest\Processor\Fixture\EntityFixture;
@@ -33,20 +32,13 @@ class SimpleFormProcessorTest extends \PHPUnit_Framework_TestCase
     private $formFactoryMock;
 
     /**
-     * @var FormErrorConverterInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $formErrorConverterMock;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        $this->formMock               = $this->getMockBuilder(FormInterface::class)
+        $this->formMock        = $this->getMockBuilder(FormInterface::class)
             ->getMock();
-        $this->formFactoryMock        = $this->getMockBuilder(FormFactoryInterface::class)
-            ->getMock();
-        $this->formErrorConverterMock = $this->getMockBuilder(FormErrorConverterInterface::class)
+        $this->formFactoryMock = $this->getMockBuilder(FormFactoryInterface::class)
             ->getMock();
     }
 
@@ -69,7 +61,7 @@ class SimpleFormProcessorTest extends \PHPUnit_Framework_TestCase
             ->method('create')
             ->willReturn($this->formMock);
 
-        $simpleFormProcessor = new SimpleFormProcessor($this->formFactoryMock, $this->formErrorConverterMock);
+        $simpleFormProcessor = new SimpleFormProcessor($this->formFactoryMock);
 
         /** @var object $entityFixture */
         $entityFixture = new EntityFixture();
@@ -87,10 +79,6 @@ class SimpleFormProcessorTest extends \PHPUnit_Framework_TestCase
             'name' => 'test',
         ];
 
-        $expectedError = [
-            'name' => 'should be atleast 6 characters',
-        ];
-
         $this->formMock
             ->expects($this->once())
             ->method('isValid')
@@ -101,10 +89,7 @@ class SimpleFormProcessorTest extends \PHPUnit_Framework_TestCase
             ->method('create')
             ->willReturn($this->formMock);
 
-        $this->formErrorConverterMock
-            ->method('toArray')
-            ->willReturn($expectedError);
-        $simpleFormProcessor = new SimpleFormProcessor($this->formFactoryMock, $this->formErrorConverterMock);
+        $simpleFormProcessor = new SimpleFormProcessor($this->formFactoryMock);
         $entityFixture       = new EntityFixture();
         $entityFixture->setName('test');
 

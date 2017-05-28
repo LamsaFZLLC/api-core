@@ -45,7 +45,7 @@ class SuccessResponse extends AbstractResponse
      */
     public function getView()
     {
-        return new View($this, $this->statusCode);
+        return new View($this, $this->code);
     }
 
     /**

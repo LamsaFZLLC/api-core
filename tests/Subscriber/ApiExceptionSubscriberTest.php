@@ -25,25 +25,50 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var ViewHandlerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $viewHandlerMock;
+
+    /**
+     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $loggerMock;
+
+    /**
+     * @var HttpKernelInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $httpKernelMock;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        $this->viewHandlerMock = $this->getMockBuilder(ViewHandlerInterface::class)
+            ->getMock();
+
+        $this->loggerMock     = $this->getMockBuilder(LoggerInterface::class)
+            ->getMock();
+        $this->httpKernelMock = $this->getMockBuilder(HttpKernelInterface::class)
+            ->getMock();
+    }
+
+    /**
      * @covers ApiExceptionSubscriber::onApiException()
      */
     public function testOnApiException()
     {
-        $response               = new Response('sss');
-        $viewHandlerMock        = $this->getMockBuilder(ViewHandlerInterface::class)
-            ->getMock();
-        $viewHandlerMock
+        $response = new Response('sss');
+
+        $this->viewHandlerMock
             ->expects($this->once())
             ->method('handle')
             ->willReturn($response);
-        $loggerMock             = $this->getMockBuilder(LoggerInterface::class)
-            ->getMock();
-        $httpKernel             = $this->getMockBuilder(HttpKernelInterface::class)
-            ->getMock();
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($viewHandlerMock, $loggerMock);
+
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock);
         $exception              = new  InvalidFormException('koko', []);
 
-        $event = new GetResponseForExceptionEvent($httpKernel, new Request(), 'json', $exception);
+        $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
         $ApiExceptionSubscriber->onApiException($event);
 
         $this->assertEquals($exception, $event->getException());
@@ -55,17 +80,10 @@ class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnApiExceptionWithoutHttpException()
     {
-        $response               = new Response('sss');
-        $viewHandlerMock        = $this->getMockBuilder(ViewHandlerInterface::class)
-            ->getMock();
-        $loggerMock             = $this->getMockBuilder(LoggerInterface::class)
-            ->getMock();
-        $httpKernel             = $this->getMockBuilder(HttpKernelInterface::class)
-            ->getMock();
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($viewHandlerMock, $loggerMock);
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock);
         $exception              = new  \Exception('koko');
 
-        $event = new GetResponseForExceptionEvent($httpKernel, new Request(), 'json', $exception);
+        $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
         $ApiExceptionSubscriber->onApiException($event);
 
         $this->assertEquals($exception, $event->getException());

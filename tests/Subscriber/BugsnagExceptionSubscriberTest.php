@@ -2,29 +2,47 @@
 /**
  * api-core
  *
- *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
-namespace Lamsa\ApiCoreTest\Subscriber;
+namespace Tests\Lamsa\ApiCore\Subscriber;
 
 use Bugsnag\Client;
+use Exception;
 use Lamsa\ApiCore\Subscriber\BugsnagExceptionSubscriber;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Event\ConsoleExceptionEvent;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Event\ConsoleErrorEvent;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
  * Class BugsnagExceptionSubscriberTest
  *
- * @package Tests\AppBundle\EventListener
+ * @package Tests\Lamsa\ApiCore\Subscriber
  */
-class BugsnagExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
+class BugsnagExceptionSubscriberTest extends TestCase
 {
     /**
      * @var Client|\PHPUnit_Framework_MockObject_MockObject
      */
     private $clientMock;
+
+    /**
+     * @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $getResponseForExceptionEventMock;
+
+    /**
+     * @var InputInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $inputMock;
+
+    /**
+     * @var OutputInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $outputMock;
 
     /**
      * {@inheritdoc}
@@ -33,6 +51,16 @@ class BugsnagExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
     {
         $this->clientMock = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->getResponseForExceptionEventMock = $this->getMockBuilder(GetResponseForExceptionEvent::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->inputMock = $this->getMockBuilder(InputInterface::class)
+            ->getMock();
+
+        $this->outputMock = $this->getMockBuilder(OutputInterface::class)
             ->getMock();
     }
 
@@ -47,6 +75,7 @@ class BugsnagExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
 
         $bugsnagExceptionHandler = new BugsnagExceptionSubscriber($this->clientMock);
 
+        /** @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject $event */
         $event = $this->getMockBuilder(GetResponseForExceptionEvent::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -59,9 +88,9 @@ class BugsnagExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers BugsnagExceptionSubscriber::onConsoleException()
+     * @covers BugsnagExceptionSubscriber::onConsoleError()
      */
-    public function testConsoleException()
+    public function testConsoleError()
     {
         $this->clientMock
             ->expects($this->once())
@@ -69,26 +98,9 @@ class BugsnagExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
 
         $bugsnagExceptionHandler = new BugsnagExceptionSubscriber($this->clientMock);
 
-        $event = $this->getMockBuilder(ConsoleExceptionEvent::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $consoleErrorEvent = new ConsoleErrorEvent($this->inputMock, $this->outputMock, new Exception('message'), null);
 
-        $event
-            ->expects($this->once())
-            ->method('getCommand')
-            ->willReturn(new Command('koko'));
-
-        $event
-            ->expects($this->once())
-            ->method('getExitCode')
-            ->willReturn(123);
-
-        $event
-            ->expects($this->once())
-            ->method('getException')
-            ->willReturn(null);
-
-        $bugsnagExceptionHandler->onConsoleException($event);
+        $bugsnagExceptionHandler->onConsoleError($consoleErrorEvent);
     }
 
 }

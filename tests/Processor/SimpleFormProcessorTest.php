@@ -6,20 +6,21 @@
  * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
-namespace Lamsa\ApiCoreTest\Processor;
+namespace Tests\Lamsa\ApiCore\Processor;
 
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Processor\SimpleFormProcessor;
-use Lamsa\ApiCoreTest\Processor\Fixture\EntityFixture;
+use PHPUnit\Framework\TestCase;
+use Tests\Lamsa\ApiCore\Processor\Fixture\EntityFixture;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 
 /**
  * Class SimpleFormProcessorTest
  *
- * @package Lamsa\ApiCoreTest\Processor
+ * @package Tests\Lamsa\ApiCore\Processor
  */
-class SimpleFormProcessorTest extends \PHPUnit_Framework_TestCase
+class SimpleFormProcessorTest extends TestCase
 {
     /**
      * @var FormInterface|\PHPUnit_Framework_MockObject_MockObject

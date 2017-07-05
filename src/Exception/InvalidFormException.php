@@ -2,8 +2,8 @@
 /**
  * api-core
  *
- * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
 namespace Lamsa\ApiCore\Exception;
@@ -23,7 +23,15 @@ class InvalidFormException extends \Exception implements HttpExceptionInterface
      */
     private $form;
 
-    public function __construct(string $message, FormInterface $form, int $code = 422, \Exception $previous = null)
+    /**
+     * InvalidFormException constructor.
+     *
+     * @param string          $message
+     * @param FormInterface   $form
+     * @param int             $code
+     * @param \Throwable|null $previous
+     */
+    public function __construct(string $message, FormInterface $form, int $code = 422, \Throwable $previous = null)
     {
         $this->form = $form;
         parent::__construct($message, $code, $previous);

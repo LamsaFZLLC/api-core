@@ -8,12 +8,13 @@
 
 namespace Lamsa\ApiCore\Converter;
 
+
 use Symfony\Component\Form\FormInterface;
 
 /**
  * Interface FormErrorConverterInterface
  *
- * @package AppBundle\Converter
+ * @package Lamsa\ApiCore\Converter
  */
 interface FormErrorConverterInterface
 {

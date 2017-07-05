@@ -6,13 +6,14 @@
  * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
-namespace Lamsa\ApiCoreTest\Subscriber;
+namespace Tests\Lamsa\ApiCore\Subscriber;
 
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Lamsa\ApiCore\Converter\FormErrorConverter;
 use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Subscriber\ApiExceptionSubscriber;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormConfigInterface;
@@ -24,9 +25,9 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 /**
  * Class ApiExceptionSubscriberTest
  *
- * @package Lamsa\ApiCoreTest\Subscriber
+ * @package Tests\Lamsa\ApiCore\Subscriber
  */
-class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
+class ApiExceptionSubscriberTest extends TestCase
 {
     /**
      * @var ViewHandlerInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -85,7 +86,7 @@ class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
             ->willReturn($response);
 
         $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter);
-        $exception              = new  InvalidFormException('koko', new Form($this->formConfigMock));
+        $exception              = new  InvalidFormException('test', new Form($this->formConfigMock));
 
         $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
         $ApiExceptionSubscriber->onApiException($event);
@@ -100,7 +101,7 @@ class ApiExceptionSubscriberTest extends \PHPUnit_Framework_TestCase
     public function testOnApiExceptionWithoutHttpException()
     {
         $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter);
-        $exception              = new  \Exception('koko');
+        $exception              = new  \Exception('test');
 
         $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
         $ApiExceptionSubscriber->onApiException($event);

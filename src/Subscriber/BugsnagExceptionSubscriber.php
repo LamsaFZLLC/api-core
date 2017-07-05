@@ -2,8 +2,8 @@
 /**
  * api-core
  *
- *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
 namespace Lamsa\ApiCore\Subscriber;
@@ -11,6 +11,7 @@ namespace Lamsa\ApiCore\Subscriber;
 use Bugsnag\Client;
 use Bugsnag\Report;
 use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -23,6 +24,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class BugsnagExceptionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var string
+     */
+    const EMPTY_COMMAND_NAME = 'No command was specified';
+
     /**
      * @var Client
      */
@@ -41,7 +47,7 @@ class BugsnagExceptionSubscriber implements EventSubscriberInterface
     /**
      * @param GetResponseForExceptionEvent $event
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(GetResponseForExceptionEvent $event): void
     {
         $exception = $event->getException();
 
@@ -49,20 +55,22 @@ class BugsnagExceptionSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param ConsoleExceptionEvent $event
+     * @param ConsoleErrorEvent $event
      */
-    public function onConsoleException(ConsoleExceptionEvent $event)
+    public function onConsoleError(ConsoleErrorEvent $event): void
     {
-        $exception = $event->getException();
+        $error = $event->getError();
+
+        $commandName = null === $event->getCommand() ? static::EMPTY_COMMAND_NAME : $event->getCommand()->getName();
 
         $meta = [
             'command' => [
-                'name'   => $event->getCommand()->getName(),
+                'name'   => $commandName,
                 'status' => $event->getExitCode(),
             ],
         ];
 
-        $this->client->notifyException($exception, function (Report $report) use ($meta) {
+        $this->client->notifyException($error, function (Report $report) use ($meta) {
             $report->setMetaData($meta);
         });
     }
@@ -73,7 +81,7 @@ class BugsnagExceptionSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::EXCEPTION => [
+            KernelEvents::EXCEPTION  => [
                 'onKernelException',
                 100,
             ],

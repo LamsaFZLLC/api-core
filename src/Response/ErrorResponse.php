@@ -8,10 +8,14 @@
 
 namespace Lamsa\ApiCore\Response;
 
+use Lamsa\ApiCore\Response\AbstractResponse;
+use Lamsa\ApiCore\Response\ErrorResponseInterface;
+
+
 /**
  * Class ErrorResponse
  *
- * @package DebitNoteBundle\Response
+ * @package Lamsa\ApiCore\Response
  */
 class ErrorResponse extends AbstractResponse
 {
@@ -23,13 +27,13 @@ class ErrorResponse extends AbstractResponse
     /**
      * ErrorResponse constructor.
      *
-     * @param object $error
-     * @param int    $statusCode
+     * @param ErrorResponseInterface $error
+     * @param int                    $code
      */
-    public function __construct($error, int $statusCode)
+    public function __construct(ErrorResponseInterface $error, int $code)
     {
         $this->error = $error;
-        parent::__construct($statusCode);
+        parent::__construct($code);
     }
 
 }

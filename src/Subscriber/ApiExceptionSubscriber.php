@@ -11,8 +11,7 @@ namespace Lamsa\ApiCore\Subscriber;
 use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Response\ErrorResponse;
-use Lamsa\ApiCore\Response\ExceptionResponseEntity;
-use Exception;
+use Lamsa\ApiCore\ResponseEntity\ErrorResponseEntity;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -61,10 +60,10 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      */
     public function onApiException(GetResponseForExceptionEvent $event)
     {
-        /** @var Exception $exception */
+        /** @var \Exception $exception */
         $exception = $event->getException();
 
-        if (!($exception instanceof HttpExceptionInterface)) {
+        if (false === ($exception instanceof HttpExceptionInterface)) {
             return;
         }
 
@@ -72,20 +71,21 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             'exception' => $exception,
         ]);
 
-        switch (true) {
-            case $exception instanceof InvalidFormException:
-                $exceptionResponseEntity = new ExceptionResponseEntity(
-                    $exception->getMessage(),
-                    $this->formErrorConverter->toArray($exception->getForm())
-                );
-                break;
-            default:
-                $exceptionResponseEntity = new ExceptionResponseEntity(
-                    $exception->getMessage()
-                );
+        if ($exception instanceof InvalidFormException) {
+            $errorResponseEntity = new ErrorResponseEntity(
+                $exception->getMessage(),
+                $this->formErrorConverter->toArray($exception->getForm())
+            );
+
+        } else {
+
+            $errorResponseEntity = new ErrorResponseEntity(
+                $exception->getMessage()
+            );
         }
 
-        $response = new ErrorResponse($exceptionResponseEntity, $exception->getStatusCode());
+        $response = new ErrorResponse($errorResponseEntity, $exception->getStatusCode());
+
         $event->setResponse($this->viewHandler->handle($response->getView()));
     }
 

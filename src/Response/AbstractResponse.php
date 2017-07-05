@@ -2,8 +2,8 @@
 /**
  * api-core
  *
- * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
 namespace Lamsa\ApiCore\Response;
@@ -13,14 +13,14 @@ use FOS\RestBundle\View\View;
 /**
  * Class AbstractResponse
  *
- * @package DebitNoteBundle\Response
+ * @package Lamsa\ApiCore\Response
  */
 abstract class AbstractResponse
 {
     /**
      * @var int
      */
-    protected $code;
+    private $code;
 
     /**
      * AbstractResponse constructor.
@@ -38,6 +38,14 @@ abstract class AbstractResponse
     public function getView(): View
     {
         return new View($this, $this->code);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCode(): int
+    {
+        return $this->code;
     }
 
     /**

@@ -2,13 +2,14 @@
 /**
  * api-core
  *
- * @author    Zaid Sasa <zaidsa3sa3@gmail.com>
- * @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
+ *  @author    Zaid Sasa <zaidsa3sa3@gmail.com>
+ *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
-namespace Lamsa\ApiCoreTest\Converter;
+namespace Tests\Lamsa\ApiCore\Converter;
 
 use Lamsa\ApiCore\Converter\FormErrorConverter;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormConfigInterface;
 use Symfony\Component\Form\FormError;
@@ -16,9 +17,9 @@ use Symfony\Component\Form\FormError;
 /**
  * Class FormErrorConverterTest
  *
- * @package Lamsa\ApiCoreTest\Converter
+ * @package Tests\Lamsa\ApiCore\Converter
  */
-class FormErrorConverterTest extends \PHPUnit_Framework_TestCase
+class FormErrorConverterTest extends TestCase
 {
     /**
      * @var FormConfigInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -33,7 +34,6 @@ class FormErrorConverterTest extends \PHPUnit_Framework_TestCase
         $this->formConfigMock = $this->getMockBuilder(FormConfigInterface::class)
             ->getMock();
     }
-
 
     /**
      * @covers FormErrorConverter::toArray()

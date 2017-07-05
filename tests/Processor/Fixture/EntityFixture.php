@@ -6,24 +6,24 @@
  *  @copyright Copyright (c) 2017 Lamsa World (http://www.lamsaworld.com/)
  */
 
-namespace Lamsa\ApiCoreTest\Processor\Fixture;
+namespace Tests\Lamsa\ApiCore\Processor\Fixture;
 
 /**
  * Class EntityTest
  *
- * @package Lamsa\ApiCoreTest\Processor\Fixture
+ * @package Tests\Lamsa\ApiCore\Processor\Fixture
  */
 class EntityFixture
 {
     /**
      * @var string
      */
-    private $name;
+    private $name = '';
 
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -31,7 +31,7 @@ class EntityFixture
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }

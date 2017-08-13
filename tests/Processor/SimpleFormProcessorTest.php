@@ -57,6 +57,11 @@ class SimpleFormProcessorTest extends TestCase
             ->method('isValid')
             ->willReturn(true);
 
+        $this->formMock
+            ->expects($this->once())
+            ->method('isSubmitted')
+            ->willReturn(true);
+
         $this->formFactoryMock
             ->expects($this->once())
             ->method('create')
@@ -84,6 +89,11 @@ class SimpleFormProcessorTest extends TestCase
             ->expects($this->once())
             ->method('isValid')
             ->willReturn(false);
+
+        $this->formMock
+            ->expects($this->once())
+            ->method('isSubmitted')
+            ->willReturn(true);
 
         $this->formFactoryMock
             ->expects($this->once())

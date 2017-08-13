@@ -22,11 +22,6 @@ use Symfony\Component\Form\FormInterface;
 class SimpleFormProcessor
 {
     /**
-     * @var string
-     */
-    const MSG_INVALID_SUBMITTED_DATA = 'Invalid submitted data';
-
-    /**
      * @var FormFactoryInterface
      */
     private $formFactory;
@@ -54,11 +49,11 @@ class SimpleFormProcessor
         $form = $this->formFactory->create($form, $entity);
         $form->submit($data);
 
-        if ($form->isValid()) {
+        if (true === $form->isSubmitted() && true === $form->isValid()) {
             return $entity;
         }
 
-        throw new InvalidFormException(static::MSG_INVALID_SUBMITTED_DATA, $form);
+        throw new InvalidFormException($form);
     }
 
 }

@@ -85,8 +85,8 @@ class BugsnagExceptionSubscriber implements EventSubscriberInterface
                 'onKernelException',
                 100,
             ],
-            ConsoleEvents::EXCEPTION => [
-                'onConsoleException',
+            ConsoleEvents::ERROR => [
+                'onConsoleError',
                 100,
             ],
         ];

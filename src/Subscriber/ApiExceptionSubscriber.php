@@ -71,17 +71,17 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             'exception' => $exception,
         ]);
 
-        if ($exception instanceof InvalidFormException) {
-            $errorResponseEntity = new ErrorResponseEntity(
-                $exception->getMessage(),
-                $this->formErrorConverter->toArray($exception->getForm())
-            );
-
-        } else {
-
-            $errorResponseEntity = new ErrorResponseEntity(
-                $exception->getMessage()
-            );
+        switch (true) {
+            case $exception instanceof InvalidFormException:
+                $errorResponseEntity = new ErrorResponseEntity(
+                    $exception->getMessage(),
+                    $this->formErrorConverter->toArray($exception->getForm())
+                );
+                break;
+            default:
+                $errorResponseEntity = new ErrorResponseEntity(
+                    $exception->getMessage()
+                );
         }
 
         $response = new ErrorResponse($errorResponseEntity, $exception->getStatusCode());

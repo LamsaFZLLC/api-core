@@ -23,7 +23,7 @@ class ValidationException extends Exception implements HttpExceptionInterface
     /**
      * @var string
      */
-    const MESSAGE = 'Validation Error';
+    const MESSAGE = 'error.validation';
 
     /**
      * @var ConstraintViolationListInterface

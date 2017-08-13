@@ -86,7 +86,7 @@ class ApiExceptionSubscriberTest extends TestCase
             ->willReturn($response);
 
         $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter);
-        $exception              = new  InvalidFormException('test', new Form($this->formConfigMock));
+        $exception              = new  InvalidFormException(new Form($this->formConfigMock));
 
         $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
         $ApiExceptionSubscriber->onApiException($event);

@@ -9,6 +9,7 @@
 namespace Lamsa\ApiCore\Exception;
 
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
@@ -19,6 +20,11 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 class InvalidFormException extends \Exception implements HttpExceptionInterface
 {
     /**
+     * @var string
+     */
+    const MESSAGE = 'error.validation';
+
+    /**
      * @var FormInterface
      */
     private $form;
@@ -26,12 +32,12 @@ class InvalidFormException extends \Exception implements HttpExceptionInterface
     /**
      * InvalidFormException constructor.
      *
-     * @param string          $message
      * @param FormInterface   $form
-     * @param int             $code
+     * @param string          $message
      * @param \Throwable|null $previous
+     * @param int             $code
      */
-    public function __construct(string $message, FormInterface $form, int $code = 422, \Throwable $previous = null)
+    public function __construct(FormInterface $form, string $message = self::MESSAGE,  \Throwable $previous = null, int $code = Response::HTTP_BAD_REQUEST)
     {
         $this->form = $form;
         parent::__construct($message, $code, $previous);

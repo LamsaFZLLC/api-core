@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "symfony/symfony": "3.3.*",
+        "symfony/symfony": "3.4.*",
         "symfony/event-dispatcher": "^3.0",
         "friendsofsymfony/rest-bundle": "^2.1",
         "psr/log": "~1.0",

@@ -21,19 +21,19 @@ use Lamsa\ApiCore\Exception\InvalidArgumentException;
 class SuccessResponse extends AbstractResponse
 {
     /**
-     * @var object|ArrayIterator|Collection
+     * @var object|ArrayIterator|Collection|string
      */
     private $data;
 
     /**
-     * @var array<string,string>
+     * @var string
      */
-    private $links = [];
+    private $message;
 
     /**
      * SuccessResponse constructor.
      *
-     * @param object $data
+     * @param object|array|string $data
      * @param int    $code
      *
      * @throws InvalidArgumentException
@@ -41,12 +41,16 @@ class SuccessResponse extends AbstractResponse
     public function __construct($data, int $code)
     {
         switch (true) {
-            case false === is_object($data):
-                throw new InvalidArgumentException('$data', 'object');
+            case true === is_object($data) || true === is_array($data):
+                $this->data  = $data;
+                break;
+            case true === is_string($data):
+                $this->message= $data;
+                break;
+            default:
+                throw new InvalidArgumentException('$data', 'object, array or string');
         }
 
-        $this->links = [];
-        $this->data  = $data;
         parent::__construct($code);
     }
 
@@ -68,18 +72,4 @@ class SuccessResponse extends AbstractResponse
 
         return new View($viewObject, $this->getCode());
     }
-
-    /**
-     * @param string $name
-     * @param string $link
-     *
-     * @return SuccessResponse
-     */
-    public function addLink(string $name, string $link): SuccessResponse
-    {
-        $this->links[$name] = $link;
-
-        return $this;
-    }
-
 }

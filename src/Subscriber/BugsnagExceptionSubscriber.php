@@ -52,8 +52,8 @@ class BugsnagExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getException();
         //skip all exceptions that are thrown by us(of type HttpExceptionInterface)
-        if (false === ($exception instanceof HttpExceptionInterface)) {
-            return;
+        if(true === ($exception instanceof HttpExceptionInterface)) {
+            return ;
         }
 
         $this->client->notifyException($exception);

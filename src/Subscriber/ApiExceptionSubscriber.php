@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use FOS\RestBundle\View\ViewHandlerInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class ApiExceptionSubscriber
@@ -42,17 +43,26 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     private $formErrorConverter;
 
     /**
-     * ApiExceptionSubscriber constructor.
-     *
-     * @param ViewHandlerInterface        $viewHandler
-     * @param LoggerInterface             $logger
-     * @param FormErrorConverterInterface $formErrorConverter
+     * @var TranslatorInterface
      */
-    public function __construct(ViewHandlerInterface $viewHandler, LoggerInterface $logger, FormErrorConverterInterface $formErrorConverter)
+    private $translator;
+
+    /**
+     * ApiExceptionSubscriber constructor.
+     * @param ViewHandlerInterface $viewHandler
+     * @param LoggerInterface $logger
+     * @param FormErrorConverterInterface $formErrorConverter
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(ViewHandlerInterface $viewHandler,
+                                LoggerInterface $logger,
+                                FormErrorConverterInterface $formErrorConverter,
+                                TranslatorInterface $translator)
     {
         $this->viewHandler        = $viewHandler;
         $this->logger             = $logger;
         $this->formErrorConverter = $formErrorConverter;
+        $this->translator         = $translator;
     }
 
     /**
@@ -71,22 +81,34 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             'exception' => $exception,
         ]);
 
+        $exceptionMessage = $this->translator->trans($exception->getMessage());
         switch (true) {
             case $exception instanceof InvalidFormException:
+                $formErrors = $this->formErrorConverter->toArray($exception->getForm());
+                $formErrors = $this->translateArrayErrors($formErrors);
                 $errorResponseEntity = new ErrorResponseEntity(
-                    $exception->getMessage(),
-                    $this->formErrorConverter->toArray($exception->getForm())
-                );
+                    $exceptionMessage,
+                    $formErrors);
                 break;
             default:
-                $errorResponseEntity = new ErrorResponseEntity(
-                    $exception->getMessage()
-                );
+                $errorResponseEntity = new ErrorResponseEntity($exceptionMessage);
         }
 
         $response = new ErrorResponse($errorResponseEntity, $exception->getStatusCode());
 
         $event->setResponse($this->viewHandler->handle($response->getView()));
+    }
+
+    /**
+     * @param array $errors
+     * @return array
+     */
+    private function translateArrayErrors(array $errors) {
+        $translatedErrors = [];
+        foreach ($errors as $message) {
+            $translatedErrors[] = $this->translator->trans($message);
+        }
+        return $translatedErrors;
     }
 
     /**
@@ -98,5 +120,4 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             KernelEvents::EXCEPTION => 'onApiException',
         ];
     }
-
 }

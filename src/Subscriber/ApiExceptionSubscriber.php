@@ -12,7 +12,6 @@ use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Response\ErrorResponse;
 use Lamsa\ApiCore\ResponseEntity\ErrorResponseEntity;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -33,11 +32,6 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     private $viewHandler;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var FormErrorConverterInterface
      */
     private $formErrorConverter;
@@ -50,17 +44,14 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     /**
      * ApiExceptionSubscriber constructor.
      * @param ViewHandlerInterface $viewHandler
-     * @param LoggerInterface $logger
      * @param FormErrorConverterInterface $formErrorConverter
      * @param TranslatorInterface $translator
      */
     public function __construct(ViewHandlerInterface $viewHandler,
-                                LoggerInterface $logger,
                                 FormErrorConverterInterface $formErrorConverter,
                                 TranslatorInterface $translator)
     {
         $this->viewHandler        = $viewHandler;
-        $this->logger             = $logger;
         $this->formErrorConverter = $formErrorConverter;
         $this->translator         = $translator;
     }
@@ -77,10 +68,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->logger->error($exception->getMessage(), [
-            'exception' => $exception,
-        ]);
-
+        $this->translator->setLocale($event->getRequest()->getLocale());
         $exceptionMessage = $this->translator->trans($exception->getMessage());
         switch (true) {
             case $exception instanceof InvalidFormException:

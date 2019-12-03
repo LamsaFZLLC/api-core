@@ -10,6 +10,7 @@ namespace Lamsa\ApiCore\Subscriber;
 
 use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
+use Lamsa\ApiCore\Exception\PlaceHolderExceptionInterface;
 use Lamsa\ApiCore\Response\ErrorResponse;
 use Lamsa\ApiCore\ResponseEntity\ErrorResponseEntity;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -69,7 +70,14 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         }
 
         $this->translator->setLocale($event->getRequest()->getLocale());
-        $exceptionMessage = $this->translator->trans($exception->getMessage());
+        if($exception instanceof PlaceHolderExceptionInterface) {
+            $exceptionMessage = $this->translator->trans(
+                $exception->getMessage(),
+                $exception->getPlaceHolders()
+            );
+        }else {
+            $exceptionMessage = $this->translator->trans($exception->getMessage());
+        }
         switch (true) {
             case $exception instanceof InvalidFormException:
                 $formErrors = $this->formErrorConverter->toArray($exception->getForm());

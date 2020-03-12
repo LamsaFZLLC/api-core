@@ -10,6 +10,7 @@ namespace Lamsa\ApiCore\Subscriber;
 
 use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
+use Lamsa\ApiCore\Exception\InvalidJsonDataException;
 use Lamsa\ApiCore\Exception\PlaceHolderExceptionInterface;
 use Lamsa\ApiCore\Response\ErrorResponse;
 use Lamsa\ApiCore\ResponseEntity\ErrorResponseEntity;
@@ -44,9 +45,10 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 
     /**
      * ApiExceptionSubscriber constructor.
-     * @param ViewHandlerInterface $viewHandler
+     *
+     * @param ViewHandlerInterface        $viewHandler
      * @param FormErrorConverterInterface $formErrorConverter
-     * @param TranslatorInterface $translator
+     * @param TranslatorInterface         $translator
      */
     public function __construct(ViewHandlerInterface $viewHandler,
                                 FormErrorConverterInterface $formErrorConverter,
@@ -70,21 +72,29 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         }
 
         $this->translator->setLocale($event->getRequest()->getLocale());
-        if($exception instanceof PlaceHolderExceptionInterface) {
+        if ($exception instanceof PlaceHolderExceptionInterface) {
             $exceptionMessage = $this->translator->trans(
                 $exception->getMessage(),
                 $exception->getPlaceHolders()
             );
-        }else {
+        }
+        else {
             $exceptionMessage = $this->translator->trans($exception->getMessage());
         }
         switch (true) {
             case $exception instanceof InvalidFormException:
-                $formErrors = $this->formErrorConverter->toArray($exception->getForm());
-                $formErrors = $this->translateArrayErrors($formErrors);
+                $formErrors          = $this->formErrorConverter->toArray($exception->getForm());
+                $formErrors          = $this->translateArrayErrors($formErrors);
                 $errorResponseEntity = new ErrorResponseEntity(
                     $exceptionMessage,
                     $formErrors);
+                break;
+            case $exception instanceof InvalidJsonDataException:
+                $errors              = $this->formErrorConverter->constraintsToArray($exception->getConstraintViolationList());
+                $errors              = $this->translateArrayErrors($errors);
+                $errorResponseEntity = new ErrorResponseEntity(
+                    $exceptionMessage,
+                    $errors);
                 break;
             default:
                 $errorResponseEntity = new ErrorResponseEntity($exceptionMessage);
@@ -97,13 +107,16 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 
     /**
      * @param array $errors
+     *
      * @return array
      */
-    private function translateArrayErrors(array $errors) {
+    private function translateArrayErrors(array $errors)
+    {
         $translatedErrors = [];
         foreach ($errors as $message) {
             $translatedErrors[] = $this->translator->trans($message);
         }
+
         return $translatedErrors;
     }
 

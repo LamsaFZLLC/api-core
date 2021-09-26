@@ -26,7 +26,7 @@ class RequestSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
-        $locale  = $request->headers->get('locale');
+        $locale  = $request->headers->get('locale') ?? 'ar';
         $request->setLocale($locale);
     }
     

@@ -15,11 +15,11 @@ use Lamsa\ApiCore\Exception\PlaceHolderExceptionInterface;
 use Lamsa\ApiCore\Response\ErrorResponse;
 use Lamsa\ApiCore\ResponseEntity\ErrorResponseEntity;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use FOS\RestBundle\View\ViewHandlerInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Translation\DataCollectorTranslator;
 
 /**
  * Class ApiExceptionSubscriber
@@ -39,7 +39,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     private $formErrorConverter;
 
     /**
-     * @var TranslatorInterface
+     * @var DataCollectorTranslator
      */
     private $translator;
 
@@ -48,11 +48,11 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      *
      * @param ViewHandlerInterface        $viewHandler
      * @param FormErrorConverterInterface $formErrorConverter
-     * @param TranslatorInterface         $translator
+     * @param DataCollectorTranslator         $translator
      */
     public function __construct(ViewHandlerInterface $viewHandler,
                                 FormErrorConverterInterface $formErrorConverter,
-                                TranslatorInterface $translator)
+                                DataCollectorTranslator $translator)
     {
         $this->viewHandler        = $viewHandler;
         $this->formErrorConverter = $formErrorConverter;
@@ -60,12 +60,12 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param GetResponseForExceptionEvent $event
+     * @param ExceptionEvent $event
      */
-    public function onApiException(GetResponseForExceptionEvent $event)
+    public function onApiException(ExceptionEvent $event)
     {
         /** @var \Exception $exception */
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
 
         if (false === ($exception instanceof HttpExceptionInterface)) {
             return;

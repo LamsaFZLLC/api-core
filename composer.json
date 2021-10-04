@@ -7,13 +7,6 @@
             "email": "zaidsa3sa3@gmail.com"
         }
     ],
-    "require": {
-        "php": ">=7.1",
-        "symfony/symfony": "5.3.7",
-        "psr/log": "~1.0",
-        "bugsnag/bugsnag-symfony": "^1.0",
-        "friendsofsymfony/rest-bundle": "^3.0"
-    },
     "autoload": {
         "psr-4": {
             "Lamsa\\ApiCore\\": "src/"
@@ -24,7 +17,28 @@
             "Tests\\Lamsa\\ApiCore\\": "tests/"
         }
     },
+    "require": {
+        "php": ">=7.1",
+        "psr/log": "~1.0",
+        "bugsnag/bugsnag-symfony": "^1.0",
+        "friendsofsymfony/rest-bundle": "^3.0",
+        "symfony/flex": "^1.16",
+        "symfony/validator": "5.3.*",
+        "symfony/form": "5.3.*",
+        "symfony/translation": "5.3.*",
+        "doctrine/collections": "^1.6"
+    },
     "require-dev": {
         "phpunit/phpunit": "7.5.20"
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "id": "01C1TW989CK77ZA7B2H4HC9WAG",
+            "allow-contrib": true,
+            "require": "5.3.*"
+        }
     }
 }

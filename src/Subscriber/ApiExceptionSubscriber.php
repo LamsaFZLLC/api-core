@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use FOS\RestBundle\View\ViewHandlerInterface;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ApiExceptionSubscriber
@@ -39,7 +39,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     private $formErrorConverter;
 
     /**
-     * @var DataCollectorTranslator
+     * @var TranslatorInterface
      */
     private $translator;
 
@@ -48,11 +48,11 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      *
      * @param ViewHandlerInterface        $viewHandler
      * @param FormErrorConverterInterface $formErrorConverter
-     * @param DataCollectorTranslator         $translator
+     * @param TranslatorInterface         $translator
      */
     public function __construct(ViewHandlerInterface $viewHandler,
                                 FormErrorConverterInterface $formErrorConverter,
-                                DataCollectorTranslator $translator)
+                                TranslatorInterface $translator)
     {
         $this->viewHandler        = $viewHandler;
         $this->formErrorConverter = $formErrorConverter;

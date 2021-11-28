@@ -33,7 +33,7 @@ class FormErrorConverter implements FormErrorConverterInterface
         }
 
         foreach ($form->all() as $child) {
-            if (!$child->isValid()) {
+            if ($child->isSubmitted() && !$child->isValid()) {
                 $errors = array_merge($errors, $this->toArray($child));
             }
         }

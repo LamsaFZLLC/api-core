@@ -14,6 +14,7 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -49,6 +50,10 @@ class BugsnagExceptionSubscriber implements EventSubscriberInterface
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
+        //skip all exceptions that are thrown by us(of type HttpExceptionInterface)
+        if(true === ($exception instanceof HttpExceptionInterface)) {
+            return ;
+        }
 
         $this->client->notifyException($exception);
     }

@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ApiExceptionSubscriberTest
@@ -36,9 +37,9 @@ class ApiExceptionSubscriberTest extends TestCase
     private $viewHandlerMock;
 
     /**
-     * @var LoggerInterface|MockObject
+     * @var TranslatorInterface|MockObject
      */
-    private $loggerMock;
+    private $translator;
 
     /**
      * @var HttpKernelInterface|MockObject
@@ -62,14 +63,13 @@ class ApiExceptionSubscriberTest extends TestCase
     {
         $this->viewHandlerMock = $this->getMockBuilder(ViewHandlerInterface::class)
             ->getMock();
-
         $this->loggerMock     = $this->getMockBuilder(LoggerInterface::class)
+            ->getMock();
+        $this->translator     = $this->getMockBuilder(TranslatorInterface::class)
             ->getMock();
         $this->httpKernelMock = $this->getMockBuilder(HttpKernelInterface::class)
             ->getMock();
-
         $this->formErrorConverter = new FormErrorConverter();
-
         $this->formConfigMock = $this->getMockBuilder(FormConfigInterface::class)
             ->getMock();
     }
@@ -85,8 +85,12 @@ class ApiExceptionSubscriberTest extends TestCase
             ->expects($this->once())
             ->method('handle')
             ->willReturn($response);
+        $this->translator
+            ->expects($this->once())
+            ->method('trans')
+            ->willReturn("message key");
 
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter);
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->formErrorConverter,$this->translator);
         $exception              = new  InvalidFormException(new Form($this->formConfigMock));
 
         $event = new ExceptionEvent($this->httpKernelMock, new Request(), HttpKernelInterface::MAIN_REQUEST, $exception);
@@ -101,7 +105,7 @@ class ApiExceptionSubscriberTest extends TestCase
      */
     public function testOnApiExceptionWithoutHttpException()
     {
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter);
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->formErrorConverter,$this->translator);
         $exception              = new  \Exception('test');
 
         $event = new ExceptionEvent($this->httpKernelMock, new Request(), HttpKernelInterface::MAIN_REQUEST, $exception);

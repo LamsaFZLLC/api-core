@@ -10,6 +10,7 @@ namespace Lamsa\ApiCore\Converter;
 
 
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Interface FormErrorConverterInterface
@@ -25,4 +26,10 @@ interface FormErrorConverterInterface
      */
     public function toArray(FormInterface $form);
 
+    /**
+     * @param ConstraintViolationListInterface $constraintViolationList
+     *
+     * @return array
+     */
+    public function constraintsToArray(ConstraintViolationListInterface $constraintViolationList);
 }

@@ -8,6 +8,7 @@
 
 namespace Lamsa\ApiCore\Subscriber;
 
+use Exception;
 use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Exception\InvalidJsonDataException;
@@ -64,7 +65,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      */
     public function onApiException(ExceptionEvent $event)
     {
-        /** @var \Exception $exception */
+        /** @var Exception $exception */
         $exception = $event->getThrowable();
 
         if (false === ($exception instanceof HttpExceptionInterface)) {
@@ -108,7 +109,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      *
      * @return array
      */
-    private function translateArrayErrors(array $errors)
+    private function translateArrayErrors(array $errors): array
     {
         $translatedErrors = [];
         foreach ($errors as $message) {

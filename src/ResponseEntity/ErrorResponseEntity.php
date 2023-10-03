@@ -20,12 +20,12 @@ class ErrorResponseEntity implements ErrorResponseInterface
     /**
      * @var string
      */
-    private $message = '';
+    private $message;
 
     /**
      * @var array
      */
-    private $errors = [];
+    private $errors;
 
     /**
      * ErrorResponseEntity constructor.
@@ -75,6 +75,8 @@ class ErrorResponseEntity implements ErrorResponseInterface
     public function setErrors(array $errors): ErrorResponseInterface
     {
         $this->errors = $errors;
+
+        return $this;
     }
 
 }

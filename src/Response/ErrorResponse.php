@@ -8,9 +8,6 @@
 
 namespace Lamsa\ApiCore\Response;
 
-use Lamsa\ApiCore\Response\AbstractResponse;
-use Lamsa\ApiCore\Response\ErrorResponseInterface;
-
 
 /**
  * Class ErrorResponse

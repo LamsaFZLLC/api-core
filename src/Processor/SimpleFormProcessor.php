@@ -8,8 +8,6 @@
 
 namespace Lamsa\ApiCore\Processor;
 
-use Lamsa\ApiCore\Converter\FormErrorConverter;
-use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -46,7 +44,7 @@ class SimpleFormProcessor
      */
     public function execute($entity, FormInterface $form, array $data)
     {
-        $form = $this->formFactory->create($form, $entity);
+        $form = $this->formFactory->create(get_class($form), $entity);
         $form->submit($data);
 
         if (true === $form->isSubmitted() && true === $form->isValid()) {

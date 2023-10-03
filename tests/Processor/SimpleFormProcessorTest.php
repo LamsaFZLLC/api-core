@@ -10,6 +10,7 @@ namespace Tests\Lamsa\ApiCore\Processor;
 
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Processor\SimpleFormProcessor;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tests\Lamsa\ApiCore\Processor\Fixture\EntityFixture;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -23,19 +24,19 @@ use Symfony\Component\Form\FormInterface;
 class SimpleFormProcessorTest extends TestCase
 {
     /**
-     * @var FormInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var FormInterface|MockObject
      */
     private $formMock;
 
     /**
-     * @var FormFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var FormFactoryInterface|MockObject
      */
     private $formFactoryMock;
 
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->formMock        = $this->getMockBuilder(FormInterface::class)
             ->getMock();

@@ -11,11 +11,14 @@ namespace Tests\Lamsa\ApiCore\Subscriber;
 use Bugsnag\Client;
 use Exception;
 use Lamsa\ApiCore\Subscriber\BugsnagExceptionSubscriber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * Class BugsnagExceptionSubscriberTest
@@ -25,35 +28,26 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 class BugsnagExceptionSubscriberTest extends TestCase
 {
     /**
-     * @var Client|\PHPUnit_Framework_MockObject_MockObject
+     * @var Client|MockObject
      */
     private $clientMock;
 
     /**
-     * @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $getResponseForExceptionEventMock;
-
-    /**
-     * @var InputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var InputInterface|MockObject
      */
     private $inputMock;
 
     /**
-     * @var OutputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OutputInterface|MockObject
      */
     private $outputMock;
 
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->clientMock = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->getResponseForExceptionEventMock = $this->getMockBuilder(GetResponseForExceptionEvent::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -75,14 +69,11 @@ class BugsnagExceptionSubscriberTest extends TestCase
 
         $bugsnagExceptionHandler = new BugsnagExceptionSubscriber($this->clientMock);
 
-        /** @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject $event */
-        $event = $this->getMockBuilder(GetResponseForExceptionEvent::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $event
-            ->method('getException')
-            ->willReturn(null);
+        /** @var ExceptionEvent|MockObject $event */
+        $kernel = $this->createMock(HttpKernelInterface::class); // Mocking the HttpKernelInterface
+        $exception = new \Exception(); // Or any other exception/thrown error you want
+        $request = new Request();
+        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
 
         $bugsnagExceptionHandler->onKernelException($event);
     }

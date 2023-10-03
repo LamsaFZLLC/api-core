@@ -74,7 +74,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof PlaceHolderExceptionInterface) {
             $exceptionMessage = $this->translator->trans(
                 $exception->getMessage(),
-                $exception->getPlaceHolders(),null,$event->getRequest()->getLocale()
+                $exception->getPlaceHolders() ?? [],null,$event->getRequest()->getLocale()
             );
         }
         else {

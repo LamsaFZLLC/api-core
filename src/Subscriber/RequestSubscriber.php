@@ -11,6 +11,7 @@
 namespace Lamsa\ApiCore\Subscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -21,9 +22,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class RequestSubscriber implements EventSubscriberInterface
 {
     /**
-     * @param ResponseEvent $event
+     * @param RequestEvent $event
      */
-    public function onKernelRequest(ResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
         $locale  = $request->headers->get('locale');

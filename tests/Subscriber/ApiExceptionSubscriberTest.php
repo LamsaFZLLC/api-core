@@ -9,6 +9,7 @@
 namespace Tests\Lamsa\ApiCore\Subscriber;
 
 use FOS\RestBundle\View\ViewHandlerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Lamsa\ApiCore\Converter\FormErrorConverter;
 use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
@@ -19,9 +20,9 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormConfigInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ApiExceptionSubscriberTest
@@ -31,22 +32,17 @@ use Symfony\Component\Translation\TranslatorInterface;
 class ApiExceptionSubscriberTest extends TestCase
 {
     /**
-     * @var ViewHandlerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ViewHandlerInterface|MockObject
      */
     private $viewHandlerMock;
 
     /**
-     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $loggerMock;
-
-    /**
-     * @var TranslatorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var TranslatorInterface|MockObject
      */
     private $translator;
 
     /**
-     * @var HttpKernelInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var HttpKernelInterface|MockObject
      */
     private $httpKernelMock;
 
@@ -56,14 +52,14 @@ class ApiExceptionSubscriberTest extends TestCase
     private $formErrorConverter;
 
     /**
-     * @var FormConfigInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var FormConfigInterface|MockObject
      */
     private $formConfigMock;
 
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->viewHandlerMock = $this->getMockBuilder(ViewHandlerInterface::class)
             ->getMock();
@@ -94,13 +90,13 @@ class ApiExceptionSubscriberTest extends TestCase
             ->method('trans')
             ->willReturn("message key");
 
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter,$this->translator);
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->formErrorConverter,$this->translator);
         $exception              = new  InvalidFormException(new Form($this->formConfigMock));
 
-        $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
+        $event = new ExceptionEvent($this->httpKernelMock, new Request(), HttpKernelInterface::MAIN_REQUEST, $exception);
         $ApiExceptionSubscriber->onApiException($event);
 
-        $this->assertEquals($exception, $event->getException());
+        $this->assertEquals($exception, $event->getThrowable());
         $this->assertEquals($response, $event->getResponse());
     }
 
@@ -109,13 +105,13 @@ class ApiExceptionSubscriberTest extends TestCase
      */
     public function testOnApiExceptionWithoutHttpException()
     {
-        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->loggerMock, $this->formErrorConverter,$this->translator);
+        $ApiExceptionSubscriber = new ApiExceptionSubscriber($this->viewHandlerMock, $this->formErrorConverter,$this->translator);
         $exception              = new  \Exception('test');
 
-        $event = new GetResponseForExceptionEvent($this->httpKernelMock, new Request(), 'json', $exception);
+        $event = new ExceptionEvent($this->httpKernelMock, new Request(), HttpKernelInterface::MAIN_REQUEST, $exception);
         $ApiExceptionSubscriber->onApiException($event);
 
-        $this->assertEquals($exception, $event->getException());
+        $this->assertEquals($exception, $event->getThrowable());
         $this->assertNull($event->getResponse());
     }
 

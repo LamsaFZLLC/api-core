@@ -9,6 +9,7 @@
 namespace Tests\Lamsa\ApiCore\Converter;
 
 use Lamsa\ApiCore\Converter\FormErrorConverter;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormConfigInterface;
@@ -22,14 +23,14 @@ use Symfony\Component\Form\FormError;
 class FormErrorConverterTest extends TestCase
 {
     /**
-     * @var FormConfigInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var FormConfigInterface|MockObject
      */
     private $formConfigMock;
 
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->formConfigMock = $this->getMockBuilder(FormConfigInterface::class)
             ->getMock();

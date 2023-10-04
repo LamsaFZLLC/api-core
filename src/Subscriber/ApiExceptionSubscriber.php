@@ -8,6 +8,7 @@
 
 namespace Lamsa\ApiCore\Subscriber;
 
+use Exception;
 use Lamsa\ApiCore\Converter\FormErrorConverterInterface;
 use Lamsa\ApiCore\Exception\InvalidFormException;
 use Lamsa\ApiCore\Exception\InvalidJsonDataException;
@@ -15,11 +16,11 @@ use Lamsa\ApiCore\Exception\PlaceHolderExceptionInterface;
 use Lamsa\ApiCore\Response\ErrorResponse;
 use Lamsa\ApiCore\ResponseEntity\ErrorResponseEntity;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use FOS\RestBundle\View\ViewHandlerInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ApiExceptionSubscriber
@@ -60,22 +61,20 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param GetResponseForExceptionEvent $event
+     * @param ExceptionEvent $event
      */
-    public function onApiException(GetResponseForExceptionEvent $event)
+    public function onApiException(ExceptionEvent $event)
     {
-        /** @var \Exception $exception */
-        $exception = $event->getException();
+        /** @var Exception $exception */
+        $exception = $event->getThrowable();
 
         if (false === ($exception instanceof HttpExceptionInterface)) {
             return;
         }
-
-        $this->translator->setLocale($event->getRequest()->getLocale());
         if ($exception instanceof PlaceHolderExceptionInterface) {
             $exceptionMessage = $this->translator->trans(
                 $exception->getMessage(),
-                $exception->getPlaceHolders()
+                $exception->getPlaceHolders() ?? [],null,$event->getRequest()->getLocale()
             );
         }
         else {
@@ -110,7 +109,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      *
      * @return array
      */
-    private function translateArrayErrors(array $errors)
+    private function translateArrayErrors(array $errors): array
     {
         $translatedErrors = [];
         foreach ($errors as $message) {
@@ -123,7 +122,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::EXCEPTION => 'onApiException',
